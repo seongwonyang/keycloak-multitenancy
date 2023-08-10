@@ -1,25 +1,39 @@
+
 server:
   port: 8088
 
 ---
 
+
+keycloak-client:
+  server-url: https://9090-uengineysw-wizmokeycloa-34ox9rqv1c6.ws-us102.gitpod.io
+  realm: master
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
 spring:
-  profiles: default
+  config:
+    activate:
+      on-profile: default
   cloud:
     gateway:
+      default-filters:
+        - TokenRelay 
       routes:
         - id: basic
           uri: http://localhost:8082
           predicates:
-            - Path=/companies/**, /products/**, 
+            - Path=/companies/**, /products/**,  /companyQueries/**
         - id: inventory
           uri: http://localhost:8083
           predicates:
-            - Path=/inventories/**, 
+            - Path=/inventories/**  
         - id: sales
           uri: http://localhost:8084
           predicates:
-            - Path=/salesOrders/**, 
+            - Path=/salesOrders/**  
         - id: frontend
           uri: http://localhost:8080
           predicates:
@@ -27,38 +41,69 @@ spring:
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins:
+            allowedOriginPatterns:
               - "*"
             allowedMethods:
               - "*"
             allowedHeaders:
               - "*"
             allowCredentials: true
-
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${keycloak-client.server-url}/realms/${keycloak-client.realm}
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: 12stmall
+            client-secret: 
+            redirect-uri: https://8088-uengineysw-wizmokeycloa-34ox9rqv1c6.ws-us102.gitpod.io/login/oauth2/code/12stmall
+            authorization-grant-type: authorization_code
+            scope: openid
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${keycloak-client.server-url}/realms/${keycloak-client.realm}/protocol/openid-connect/certs
 
 ---
 
 spring:
-  profiles: docker
+  config:
+    activate:
+      on-profile: docker
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${keycloak-client.server-url}/realms/${keycloak-client.realm}
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: "<client-id>"
+            client-secret: 
+            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
+            authorization-grant-type: authorization_code
+            scope: openid
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${keycloak-client.server-url}/realms/${keycloak-client.realm}/protocol/openid-connect/certs
   cloud:
     gateway:
       routes:
         - id: basic
           uri: http://basic:8080
           predicates:
-            - Path=/companies/**, /products/**, 
+            - Path=/companies/**/products/** /companyQueries/**
         - id: inventory
           uri: http://inventory:8080
           predicates:
-            - Path=/inventories/**, 
+            - Path=/inventories/** 
         - id: sales
           uri: http://sales:8080
           predicates:
-            - Path=/salesOrders/**, 
-        - id: frontend
-          uri: http://frontend:8080
-          predicates:
-            - Path=/**
+            - Path=/salesOrders/** 
       globalcors:
         corsConfigurations:
           '[/**]':

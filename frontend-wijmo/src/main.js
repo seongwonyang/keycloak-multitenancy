@@ -70,9 +70,9 @@ Vue.prototype.$ManagerLists.forEach(function(item, idx) {
 })
 
 let initOptions = {
-  url: `http://localhost:9090/`,
+  url: `https://9090-uengineysw-wizmokeycloa-34ox9rqv1c6.ws-us102.gitpod.io/`,
   realm: `master`,
-  clientId: `cliend-name`,
+  clientId: `12stmall`,
   onLoad: `login-required`,
 };
 

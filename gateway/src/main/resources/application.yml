@@ -1,12 +1,17 @@
-server:
+
+server:
   port: 8088
 
 ---
 
 
 keycloak-client:
-  server-url: http://localhost:9090
+  server-url: https://9090-uengineysw-wizmokeycloa-34ox9rqv1c6.ws-us102.gitpod.io
   realm: master
+
+logging:
+  level:
+    org.springframework.security: DEBUG
 
 spring:
   config:
@@ -20,7 +25,7 @@ spring:
         - id: basic
           uri: http://localhost:8082
           predicates:
-            - Path=/companies/** /products/**  /companyQueries/**
+            - Path=/companies/**, /products/**,  /companyQueries/**
         - id: inventory
           uri: http://localhost:8083
           predicates:
@@ -52,9 +57,9 @@ spring:
             user-name-attribute: preferred_username
         registration:
           keycloak:
-            client-id: "<client-id>"
+            client-id: 12stmall
             client-secret: 
-            redirect-uri: "gateway-path/login/oauth2/code/client-name"
+            redirect-uri: https://8088-uengineysw-wizmokeycloa-34ox9rqv1c6.ws-us102.gitpod.io/login/oauth2/code/12stmall
             authorization-grant-type: authorization_code
             scope: openid
       resourceserver:
